@@ -169,7 +169,7 @@
           "Rp " + Number(d.harga).toLocaleString("id-ID");
         document.getElementById("m-desc").innerText = d.deskripsi;
         document.getElementById("m-wa").href =
-          `https://wa.me/${d.wa}?text=Halo Admin, saya minat akun ${d.judul} (ID: ${d.id})`;
+          `https://wa.me/${d.wa}?text=Halo Admin, saya minat akun ${d.judul}`;
 
         // Generate Filter Tags
         const tags = ["Semua", ...new Set(d.koleksi_foto.map((f) => f.tag))];
