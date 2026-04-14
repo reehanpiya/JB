@@ -99,19 +99,37 @@
       let currentId = null;
 
       // FUNGSI UTAMA: Ambil data dari file JSON eksternal
-      async function loadData() {
+      aasync function loadData() {
     try {
-        // Tambahkan timestamp agar browser tidak ambil cache lama
         const response = await fetch("data-akun.json?v=" + new Date().getTime());
         const rawData = await response.json();
 
-        // VALIDASI: Memastikan data yang masuk adalah Array
-        if (Array.isArray(rawData)) {
-            allData = rawData;
-        } else {
-            // Jika datanya cuma 1 objek, kita bungkus jadi array secara paksa
-            allData = [rawData];
-        }
+        // Fungsi internal untuk menebak tag dari link
+        const tebakTag = (url) => {
+            const link = url.toLowerCase();
+            if (link.includes('legend')) return 'Legend';
+            if (link.includes('collector')) return 'Collector';
+            if (link.includes('epic')) return 'Epic';
+            if (link.includes('prime')) return 'Prime';
+            if (link.includes('zodiac')) return 'Zodiac';
+            return 'Lainnya';
+        };
+
+        // Proses data agar tag yang kosong otomatis terisi tebakan
+        allData = (Array.isArray(rawData) ? rawData : [rawData]).map(akun => ({
+            ...akun,
+            koleksi_foto: akun.koleksi_foto.map(foto => ({
+                src: foto.src,
+                // Jika tag kosong, jalankan fungsi tebakTag
+                tag: (foto.tag && foto.tag !== "") ? foto.tag : tebakTag(foto.src)
+            }))
+        }));
+
+        renderCards();
+    } catch (error) {
+        console.error("Gagal memuat JSON:", error);
+    }
+}
 
         renderCards();
     } catch (error) {
