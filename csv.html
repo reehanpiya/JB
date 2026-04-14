@@ -51,16 +51,30 @@
       const CSV_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0AvGjvqdSRMdyetiSc4L-wIu7SqqqtNJqiikgqQloxcCGjWSym5Vr0wytZnsx2l1J2U0dQm_sBn2F/pub?output=csv";
 
+      const CACHE_KEY = "katalog_cache";
+      const CACHE_TIME = 1000 * 60 * 5; // 5 menit
+
       let allData = [];
 
       // ================= FETCH DATA =================
       async function loadData() {
         try {
+          const cache = localStorage.getItem(CACHE_KEY);
+          const cacheTime = localStorage.getItem(CACHE_KEY + "_time");
+
+          // 🔥 pake cache biar ngebut
+          if (cache && cacheTime && Date.now() - cacheTime < CACHE_TIME) {
+            allData = JSON.parse(cache);
+            render();
+            return;
+          }
+
           const res = await fetch(CSV_URL);
           const csv = await res.text();
 
-          // 🔥 buang row kosong
-          const raw = csvToJSON(csv).filter((row) => row.ID);
+          const raw = csvToJSON(csv)
+            .filter((row) => row.ID)
+            .filter((row) => (row.Status || "").toLowerCase() !== "sold");
 
           allData = raw.map((row) => ({
             id: row.ID || "-",
@@ -69,16 +83,19 @@
             deskripsi: row.Deskripsi || "",
             wa: row.WA || "",
 
-            // 🔥 FIX UTAMA DI SINI
             koleksi_foto: (row.Link_Foto || "")
               .split("|")
-              .map((link) => link.trim())
-              .filter((link) => link !== "")
-              .map((link) => ({
-                src: link,
-                tag: autoTag(link),
+              .map((l) => l.trim())
+              .filter((l) => l !== "")
+              .map((l) => ({
+                src: l,
+                tag: autoTag(l),
               })),
           }));
+
+          // 🔥 simpan cache
+          localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+          localStorage.setItem(CACHE_KEY + "_time", Date.now());
 
           render();
         } catch (e) {
@@ -123,7 +140,7 @@
           .map(
             (a) => `
     <div class="card" onclick="openDetail('${a.id}')">
-      <img src="${a.koleksi_foto[0]?.src || "https://via.placeholder.com/300"}">
+      <img src="${a.koleksi_foto[0]?.src || "https://via.placeholder.com/300"}" loading="lazy">
       <div class="card-body">
         <h4>${a.judul}</h4>
         <p>ID: ${a.id}</p>
@@ -141,7 +158,7 @@
         if (!a) return;
 
         let photos = a.koleksi_foto
-          .map((p) => `<img src="${p.src}" width="100%">`)
+          .map((p) => `<img src="${p.src}" width="100%" loading="lazy">`)
           .join("");
 
         document.body.innerHTML = `
