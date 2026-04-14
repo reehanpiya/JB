@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameStore - Live Katalog</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #0b0f17;
+        color: #fff;
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        background: #111827;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .card img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+      }
+      .card-body {
+        padding: 10px;
+      }
+      .price {
+        color: #22c55e;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Katalog Akun Game</h2>
+    <div id="list" class="grid">Loading...</div>
+
+    <script>
+      const CSV_URL =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0AvGjvqdSRMdyetiSc4L-wIu7SqqqtNJqiikgqQloxcCGjWSym5Vr0wytZnsx2l1J2U0dQm_sBn2F/pub?output=csv";
+
+      let allData = [];
+
+      // ================= FETCH DATA =================
+      async function loadData() {
+        try {
+          const res = await fetch(CSV_URL);
+          const csv = await res.text();
+
+          // 🔥 buang row kosong
+          const raw = csvToJSON(csv).filter((row) => row.ID);
+
+          allData = raw.map((row) => ({
+            id: row.ID || "-",
+            judul: row.Judul || "Tanpa Judul",
+            harga: row.Harga || 0,
+            deskripsi: row.Deskripsi || "",
+            wa: row.WA || "",
+
+            // 🔥 FIX UTAMA DI SINI
+            koleksi_foto: (row.Link_Foto || "")
+              .split("|")
+              .map((link) => link.trim())
+              .filter((link) => link !== "")
+              .map((link) => ({
+                src: link,
+                tag: autoTag(link),
+              })),
+          }));
+
+          render();
+        } catch (e) {
+          console.error(e);
+          document.getElementById("list").innerHTML = "Gagal load data";
+        }
+      }
+
+      // ================= CSV PARSER =================
+      function csvToJSON(csv) {
+        const lines = csv.split("\n");
+        const headers = lines[0].split(",");
+
+        return lines.slice(1).map((line) => {
+          const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+          let obj = {};
+
+          headers.forEach((h, i) => {
+            obj[h.trim()] = values?.[i]?.replace(/"/g, "").trim();
+          });
+
+          return obj;
+        });
+      }
+
+      // ================= AUTO TAG =================
+      function autoTag(url) {
+        const u = url.toLowerCase();
+        if (u.includes("legend")) return "Legend";
+        if (u.includes("epic")) return "Epic";
+        if (u.includes("collector")) return "Collector";
+        if (u.includes("zodiac")) return "Zodiac";
+        if (u.includes("lightborn")) return "Lightborn";
+        return "Skin";
+      }
+
+      // ================= RENDER =================
+      function render() {
+        const el = document.getElementById("list");
+
+        el.innerHTML = allData
+          .map(
+            (a) => `
+    <div class="card" onclick="openDetail('${a.id}')">
+      <img src="${a.koleksi_foto[0]?.src || "https://via.placeholder.com/300"}">
+      <div class="card-body">
+        <h4>${a.judul}</h4>
+        <p>ID: ${a.id}</p>
+        <p class="price">Rp ${Number(a.harga).toLocaleString("id-ID")}</p>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      // ================= DETAIL =================
+      function openDetail(id) {
+        const a = allData.find((x) => x.id === id);
+        if (!a) return;
+
+        let photos = a.koleksi_foto
+          .map((p) => `<img src="${p.src}" width="100%">`)
+          .join("");
+
+        document.body.innerHTML = `
+    <button onclick="location.reload()">⬅ kembali</button>
+    <h2>${a.judul}</h2>
+    <p>Rp ${Number(a.harga).toLocaleString("id-ID")}</p>
+    <p>${a.deskripsi}</p>
+    ${photos}
+    <br><br>
+    <a href="https://wa.me/${a.wa}?text=Halo saya minat ${a.judul}">
+      Beli via WhatsApp
+    </a>
+  `;
+      }
+
+      // ================= START =================
+      loadData();
+    </script>
+  </body>
+</html>
