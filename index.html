@@ -707,7 +707,10 @@
         const grid = document.getElementById("katalog-grid");
 
         const filtered = allData.filter((a) => {
+          if ((a.status || "").toLowerCase() === "sold") return false;
+
           const game = getGameType(a.id);
+
           return (
             (aktifFilter === "semua" || game.key === aktifFilter) &&
             (a.judul.toLowerCase().includes(search) ||
