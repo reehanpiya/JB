@@ -100,17 +100,26 @@
 
       // FUNGSI UTAMA: Ambil data dari file JSON eksternal
       async function loadData() {
-        try {
-          // 'data-akun.json' harus ada di folder yang sama
-          const response = await fetch("data-akun.json");
-          allData = await response.json();
-          renderCards();
-        } catch (error) {
-          console.error("Gagal memuat JSON:", error);
-          document.getElementById("katalog-grid").innerHTML =
-            "<p class='col-span-full text-center'>Gagal memuat katalog.</p>";
+    try {
+        // Tambahkan timestamp agar browser tidak ambil cache lama
+        const response = await fetch("data-akun.json?v=" + new Date().getTime());
+        const rawData = await response.json();
+
+        // VALIDASI: Memastikan data yang masuk adalah Array
+        if (Array.isArray(rawData)) {
+            allData = rawData;
+        } else {
+            // Jika datanya cuma 1 objek, kita bungkus jadi array secara paksa
+            allData = [rawData];
         }
-      }
+
+        renderCards();
+    } catch (error) {
+        console.error("Gagal memuat JSON:", error);
+        document.getElementById("katalog-grid").innerHTML =
+            "<p class='col-span-full text-center'>Gagal memuat katalog. Pastikan format JSON benar.</p>";
+    }
+}
 
       function renderCards() {
   const grid = document.getElementById("katalog-grid");
