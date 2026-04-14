@@ -29,14 +29,63 @@
     ]
   },
   {
+    "id": "FF002",
+    "judul": "MUMI LEVEL FULL",
+    "harga": "1200000",
+    "game": "FF",
+    "deskripsi": "MUMI  LEVEL FULL",
+    "wa": "6285325820910",
+    "status": "available",
+    "koleksi_foto": [
+      { "src": "https://i.postimg.cc/FzZScLtZ/gemini10-zodiac.png", "tag": "" },
+      {
+        "src": "https://i.postimg.cc/GhXYmGxm/gemini2-collector.png",
+        "tag": ""
+      },
+      { "src": "https://i.postimg.cc/Wb5r1gwP/gemini3-epic.png", "tag": "" },
+      { "src": "https://i.postimg.cc/J4pJzZ5m/gemini4-prime.png", "tag": "" },
+      { "src": "https://i.postimg.cc/RVSKmXfT/gemini5-zodiac.png", "tag": "" },
+      {
+        "src": "https://i.postimg.cc/Y2fYTJ44/gemini6-lightborn.png",
+        "tag": ""
+      },
+      {
+        "src": "https://i.postimg.cc/J0qXJkwc/gemini7-lightborn.png",
+        "tag": ""
+      },
+      { "src": "https://i.postimg.cc/3N7pdZqZ/gemini8-zodiac.png", "tag": "" },
+      { "src": "https://i.postimg.cc/J0qXJkwJ/gemini9-epic.png", "tag": "" },
+      { "src": "https://i.postimg.cc/3xWG4Nt2/gemini-legend.png", "tag": "" }
+    ]
+  },
+  {
     "id": "PUB001",
     "judul": "MUMI LEVEL FULL",
     "harga": "1200000",
     "game": "PUBG",
     "deskripsi": "MUMI  LEVEL FULL",
-    "link_foto": "https://i.postimg.cc/FzZScLtZ/gemini10-zodiac.png, https://i.postimg.cc/GhXYmGxm/gemini2-collector.png, https://i.postimg.cc/Wb5r1gwP/gemini3-epic.png, https://i.postimg.cc/J4pJzZ5m/gemini4-prime.png, https://i.postimg.cc/RVSKmXfT/gemini5-zodiac.png, https://i.postimg.cc/Y2fYTJ44/gemini6-lightborn.png, https://i.postimg.cc/J0qXJkwc/gemini7-lightborn.png, https://i.postimg.cc/3N7pdZqZ/gemini8-zodiac.png, https://i.postimg.cc/J0qXJkwJ/gemini9-epic.png, https://i.postimg.cc/3xWG4Nt2/gemini-legend.png",
-    "tag_foto": "",
     "wa": "6285325820910",
-    "status": "available"
+    "status": "available",
+    "koleksi_foto": [
+      { "src": "https://i.postimg.cc/FzZScLtZ/gemini10-zodiac.png", "tag": "" },
+      {
+        "src": "https://i.postimg.cc/GhXYmGxm/gemini2-collector.png",
+        "tag": ""
+      },
+      { "src": "https://i.postimg.cc/Wb5r1gwP/gemini3-epic.png", "tag": "" },
+      { "src": "https://i.postimg.cc/J4pJzZ5m/gemini4-prime.png", "tag": "" },
+      { "src": "https://i.postimg.cc/RVSKmXfT/gemini5-zodiac.png", "tag": "" },
+      {
+        "src": "https://i.postimg.cc/Y2fYTJ44/gemini6-lightborn.png",
+        "tag": ""
+      },
+      {
+        "src": "https://i.postimg.cc/J0qXJkwc/gemini7-lightborn.png",
+        "tag": ""
+      },
+      { "src": "https://i.postimg.cc/3N7pdZqZ/gemini8-zodiac.png", "tag": "" },
+      { "src": "https://i.postimg.cc/J0qXJkwJ/gemini9-epic.png", "tag": "" },
+      { "src": "https://i.postimg.cc/3xWG4Nt2/gemini-legend.png", "tag": "" }
+    ]
   }
 ]
