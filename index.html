@@ -99,12 +99,11 @@
       let currentId = null;
 
       // FUNGSI UTAMA: Ambil data dari file JSON eksternal
-      aasync function loadData() {
+      async function loadData() {
     try {
         const response = await fetch("data-akun.json?v=" + new Date().getTime());
         const rawData = await response.json();
 
-        // Fungsi internal untuk menebak tag dari link
         const tebakTag = (url) => {
             const link = url.toLowerCase();
             if (link.includes('legend')) return 'Legend';
@@ -115,29 +114,29 @@
             return 'Lainnya';
         };
 
-        // Proses data agar tag yang kosong otomatis terisi tebakan
         allData = (Array.isArray(rawData) ? rawData : [rawData]).map(akun => ({
             ...akun,
             koleksi_foto: akun.koleksi_foto.map(foto => ({
                 src: foto.src,
-                // Jika tag kosong, jalankan fungsi tebakTag
                 tag: (foto.tag && foto.tag !== "") ? foto.tag : tebakTag(foto.src)
             }))
         }));
 
         renderCards();
-    } catch (error) {
-        console.error("Gagal memuat JSON:", error);
-    }
-}
 
-        renderCards();
     } catch (error) {
         console.error("Gagal memuat JSON:", error);
         document.getElementById("katalog-grid").innerHTML =
             "<p class='col-span-full text-center'>Gagal memuat katalog. Pastikan format JSON benar.</p>";
     }
 }
+
+        renderCards();
+    } catch (error) {
+        console.error("Gagal memuat JSON:", error);
+    }
+}
+
 
       function renderCards() {
   const grid = document.getElementById("katalog-grid");
