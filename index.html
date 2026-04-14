@@ -94,7 +94,7 @@
       </div>
     </div>
 
-    <script>
+    <!-- <script>
       let allData = [];
       let currentId = null;
 
@@ -223,6 +223,117 @@
 
       // Jalankan saat load
       loadData();
-    </script>
+    </script> -->
+    <script>
+  let allData = [];
+  let currentId = null;
+
+  // FUNGSI UTAMA: Ambil data dari file JSON eksternal
+  async function loadData() {
+    try {
+      const response = await fetch("data-akun.json?v=" + new Date().getTime());
+      const rawData = await response.json();
+
+      const tebakTag = (url) => {
+        const link = url.toLowerCase();
+        if (link.includes('legend')) return 'Legend';
+        if (link.includes('collector')) return 'Collector';
+        if (link.includes('epic')) return 'Epic';
+        if (link.includes('prime')) return 'Prime';
+        if (link.includes('zodiac')) return 'Zodiac';
+        return 'Lainnya';
+      };
+
+      // Memastikan data berbentuk array dan mengisi tag otomatis
+      allData = (Array.isArray(rawData) ? rawData : [rawData]).map(akun => ({
+        ...akun,
+        koleksi_foto: akun.koleksi_foto.map(foto => ({
+          src: foto.src,
+          tag: (foto.tag && foto.tag !== "") ? foto.tag : tebakTag(foto.src)
+        }))
+      }));
+
+      renderCards();
+
+    } catch (error) {
+      console.error("Gagal memuat JSON:", error);
+      document.getElementById("katalog-grid").innerHTML =
+        "<p class='col-span-full text-center'>Gagal memuat katalog. Pastikan format JSON benar.</p>";
+    }
+  }
+
+  function renderCards() {
+    const grid = document.getElementById("katalog-grid");
+    if (!allData || allData.length === 0) return;
+
+    grid.innerHTML = allData.map((d) => `
+      <div class="glass rounded-3xl overflow-hidden hover:scale-[1.02] transition-all p-4">
+        <img src="${d.koleksi_foto[0]?.src || ''}" class="w-full h-48 object-cover rounded-2xl mb-4" loading="lazy">
+        <div class="px-2">
+          <h3 class="text-xl font-bold mb-1 uppercase">${d.judul}</h3>
+          <p class="text-slate-500 text-sm mb-4">${d.pangkat || 'N/A'} | ${d.skin || 'N/A'}</p>
+          <div class="flex justify-between items-center border-t border-white/5 pt-4">
+            <span class="text-lg font-bold text-green-400">Rp ${Number(d.harga).toLocaleString('id-ID')}</span>
+            <button onclick="openDetail('${d.id}')" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-sm font-bold transition">Detail</button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function openDetail(id) {
+    currentId = id;
+    const d = allData.find((item) => item.id === id);
+    if (!d) return;
+
+    document.getElementById("m-title").innerText = d.judul;
+    document.getElementById("m-price").innerText = "Rp " + Number(d.harga).toLocaleString('id-ID');
+    document.getElementById("m-desc").innerText = d.deskripsi;
+    document.getElementById("m-wa").href = `https://wa.me/${d.wa}?text=Halo Admin, saya minat akun ${d.judul} (ID: ${d.id})`;
+
+    // Generate Filter Tags
+    const tags = ["Semua", ...new Set(d.koleksi_foto.map((f) => f.tag))];
+    const filterContainer = document.getElementById("filter-tag-container");
+    
+    filterContainer.innerHTML = tags.map((t) => `
+      <button onclick="applyFilter('${t}', this)" class="tag-btn whitespace-nowrap px-4 py-1.5 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-wider transition-all">
+        ${t}
+      </button>
+    `).join("");
+
+    applyFilter("Semua", filterContainer.querySelector("button"));
+    document.getElementById("modal-detail").classList.remove("hidden");
+    document.body.style.overflow = 'hidden'; // Lock scroll
+  }
+
+  function applyFilter(tag, btn) {
+    const d = allData.find((item) => item.id === currentId);
+    const filtered = tag === "Semua" ? d.koleksi_foto : d.koleksi_foto.filter((f) => f.tag === tag);
+
+    // Styling Button Aktif
+    document.querySelectorAll(".tag-btn").forEach((b) => {
+        b.classList.remove('bg-sky-500', 'text-white');
+        b.classList.add('text-slate-400');
+    });
+    btn.classList.add('bg-sky-500', 'text-white');
+    btn.classList.remove('text-slate-400');
+
+    document.getElementById("main-view").src = filtered[0].src;
+
+    const thumbContainer = document.getElementById("thumb-container");
+    thumbContainer.innerHTML = filtered.map((f) => `
+      <img src="${f.src}" onclick="document.getElementById('main-view').src='${f.src}'" 
+           class="w-full aspect-square object-cover rounded-lg cursor-pointer opacity-40 hover:opacity-100 transition-all border border-transparent hover:border-sky-500">
+    `).join("");
+  }
+
+  function closeModal() {
+    document.getElementById("modal-detail").classList.add("hidden");
+    document.body.style.overflow = 'auto'; // Unlock scroll
+  }
+
+  // Jalankan saat load
+  loadData();
+</script>
   </body>
 </html>
